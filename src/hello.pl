@@ -4,5 +4,8 @@ use warnings;
 
 use 5.010;
 
-say 'Hello world';
+use Readonly;
+Readonly my $WHO => 'world';
+
+say "Hello $WHO";
 
