@@ -1,0 +1,8 @@
+hello.pl -- greet
+
+the hello.pl file is a perl example program that can greet you in a pleasant way.
+
+Author: various
+Typist: Frank
+Command line options: none
+
