@@ -7,5 +7,10 @@ use 5.010;
 use Readonly;
 Readonly my $WHO => 'world';
 
-say "Hello $WHO";
+foreach (1..3) {
+    say "Hello $WHO";
+}
+
+
+
 
