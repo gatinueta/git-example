@@ -8,9 +8,18 @@ use Readonly;
 Readonly my $WHO => 'world';
 Readonly my $NTIMES => 3;
 
-foreach (1..$NTIMES) {
-    say "Hello $WHO";
+sub repeat(&$) {
+    my ($code, $ntimes) = @_;
+
+    for (1..$ntimes) {
+        $code->();
+    }
 }
+
+repeat {
+    say "Hello $WHO";
+} $NTIMES;
+
 
 
 
