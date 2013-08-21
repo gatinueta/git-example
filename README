@@ -1,3 +1,5 @@
 This is the hello git repo
 - src/: project source files
 - doc/: project documentation
+- bin/: binary resources
+
