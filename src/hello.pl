@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 
+# Author: Frank Ammeter
+
 use 5.010;
 
 use Readonly;
