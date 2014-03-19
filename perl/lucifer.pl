@@ -2,6 +2,8 @@ use 5.010;
 use strict;
 use warnings;
 
+# calculates the solution of the lucifer riddle
+
 use Getopt::Long;
 
 # Author: Frank Ammeter
