@@ -4,6 +4,8 @@ use warnings;
 
 use Getopt::Long;
 
+# Author: Frank Ammeter
+
 my $explain = 0;
 
 GetOptions( 'explain' => \$explain );
