@@ -1,6 +1,7 @@
-use Arrays;
+use ArrayEditor;
 
 use Moose;
+use Moose::Autobox;
 use 5.010;
 use Readonly;
 
@@ -8,9 +9,9 @@ use Config;
 
 Readonly my $SEPARATOR => $Config{'path_sep'};
 
-my @array = split $SEPARATOR, $ENV{'PATH'};
+my $arrayref = $ENV{'PATH'}->split( $SEPARATOR );
 
-my $a = Arrays->new(array => \@array); 
+my $a = ArrayEditor->new(array => $arrayref); 
 $a->edit();
-say 'PATH=', join $SEPARATOR, @{ $a->array };
+say 'PATH=', $a->array->join( $SEPARATOR );
 

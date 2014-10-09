@@ -1,4 +1,4 @@
-package Arrays;
+package ArrayEditor;
 
 use Moose;
 use MooseX::Method::Signatures;
@@ -10,21 +10,23 @@ use feature 'switch';
 
 has 'array' => (isa => 'ArrayRef', is => 'rw');
 
-method process() {
-    print '(p)op, (a)ppend, (i)nsert, (d)elete or (q)uit? ';
-    ReadMode 4;
-    my $key;
-    while (not defined ($key = ReadKey(-1))) {
-        # No key yet
-    }
-    say '';
-    my $continue = 1;
+sub Moose::Autobox::ARRAY::insert_elem {
+    my ($self, $pos, $el) = @_;
+    splice @{ $self }, $pos, 0, $el;
+}
+
+sub Moose::Autobox::ARRAY::delete_elem {
+    my ($self, $pos) = @_;
+    splice @{ $self }, $pos, 1;
+}
+
+method _process_key ($key) {
     given ($key) {
         when ('p') {
-            pop @{ $self->array };
+            $self->array->pop();
         }
         when ('q') {
-            $continue = 0;
+           return 0; 
         }
         when ('a') {
             print 'append: ';
@@ -40,20 +42,32 @@ method process() {
             print 'what: ';
             my $el = <>; 
             chomp $el;
-
-            splice @{ $self->array }, $pos, 0, $el;
+            $self->array->insert_elem( $pos, $el );
         }
         when ('d') {
             print 'delete at pos: ';
             ReadMode 0;
             my $pos = int(<>);
 
-            splice @{ $self->array }, $pos, 1;
+            $self->array->delete_elem( $pos );
         }
         default {
             warn "unrecognized command $key\n";
         }
     }
+    return 1;
+}
+
+
+method process() {
+    print '(p)op, (a)ppend, (i)nsert, (d)elete or (q)uit? ';
+    ReadMode 4;
+    my $key;
+    while (not defined ($key = ReadKey(-1))) {
+        # No key yet
+    }
+    say '';
+    my $continue = $self->_process_key($key);
     ReadMode 0;
     return $continue;
 }
