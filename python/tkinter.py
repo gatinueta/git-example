@@ -3,41 +3,92 @@ from random import randint,uniform
 import math
 from copy import deepcopy
 
+def point_inside_polygon(p,poly):
+    n = len(poly)
+    inters=0
+    p1 = poly[0]
+    for i in range(1,n+1):
+        p2 = poly[i%n]
+        if min(p1.y,p2.y) < p.y and p.y < max(p1.y,p2.y):
+            x = p1.x + (p2.x-p1.x)/(p2.y-p1.y) * (p2.y-p.y)
+            if x<p.x:
+                inters += 1
+        p1 = p2
+    return inters%2 == 1
+    
+def addpoint_callback(event):
+    p = Point(event.x, event.y)
+    print "adding point ", p
+    event.widget.bounds.append(p)
+
+def startanim_callback(event):
+    anim.set_start(Point(event.x, event.y))
+    anim.start_anim()
+
+
 class Point:
-    x = 0
-    y = 0
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-master = Tk()
-w = Canvas(master, width=200, height=200)
-w.pack()
-p = Point()
-p.x = 100.0
-p.y = 100.0
-MIN = Point()
-MIN.x = 10
-MIN.y = 10
-MAX = Point()
-MAX.x = 190
-MAX.y = 190
+    def __repr__(self):
+        return "[ " + str(self.x) + ", " + str(self.y) + " ]" 
 
-def inrange(p):
-    return p.x > MIN.x and p.y > MIN.y and p.x < MAX.x and p.y < MAX.y
+class tkanim:
+    def start_anim(self):
+        self.w.create_polygon([ ( p.x, p.y ) for p in self.w.bounds ], fill='', outline='green')
+        self.master.after(100, self.animate)
 
-SIZE = 10
-x=0
-direction = 0
-lastp = Point()
+    def set_start(self, p):
+        self.p = self.lastp = p
 
-for i in range(34):
-    fx = math.sin(direction)
-    fy = math.cos(direction)
+    def shoot(self,event):
+        widget = event.widget
+        x = randint(0, widget.winfo_width()-10)
+        y = randint(0, widget.winfo_height()-10)
+        p = Point(x, y)
+        if point_inside_polygon(p, widget.bounds):
+            color = 'blue'
+        else:
+            color = 'red'
+        widget.create_oval(x-2, y-2, x+2, y+2, fill=color, outline=color)
+        self.master.after(100, self.shoot)
+ 
+    def __init__(self):
+        self.master = Tk()
+        twidth=500
+        theight=500
+        border = 40
+        self.w = Canvas(self.master, width=twidth, height=theight)
+        self.w.bind("<Button-1>", addpoint_callback)
+        self.w.bind("<Button-2>", startanim_callback)
+        self.w.bind("<Control-Button-1>", self.shoot)
+        self.w.pack()
+        self.w.bounds = [] 
+        self.SIZE = 2
+        self.direction = 0
 
-    while inrange(p):
-        lastp = deepcopy(p)
-        p.x += uniform(0,2)*fx
-        p.y += uniform(0,2)*fy
-        w.create_oval(p.x, p.y, p.x+SIZE, p.y+SIZE, fill="red")
-    direction = direction+math.pi+uniform(-.1,+.1)
-    p = deepcopy(lastp)
+    def inrange(self,p):
+        return point_inside_polygon(p, self.w.bounds)
+
+    def animate(self):
+        fx = math.sin(self.direction)
+        fy = math.cos(self.direction)
+        steps=0
+        while self.inrange(self.p):
+            self.lastp = deepcopy(self.p)
+            self.p.x += uniform(0,2)*fx
+            self.p.y += uniform(0,2)*fy
+            self.w.create_oval(self.p.x, self.p.y, self.p.x+self.SIZE, self.p.y+self.SIZE, fill="red", outline="red")
+            steps += 1
+        self.w.create_oval(self.p.x, self.p.y, self.p.x+5*self.SIZE, self.p.y+5*self.SIZE, fill="blue", outline="blue")
+        self.direction = self.direction + math.pi + uniform(-.5,+.5)
+        if self.direction > 2*math.pi:
+            self.direction -= 2*math.pi
+        print "changing direction after ", steps, " steps"
+        self.p = deepcopy(self.lastp)
+        self.master.after(100, self.animate)
+
+
+anim = tkanim()
 mainloop()
-

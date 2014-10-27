@@ -81,7 +81,7 @@ method edit() {
 
 method show() {
     foreach my $i (0 .. $self->array->length-1) {
-        say "$i\t: ", $self->array->[$i];
+        say "$i\t: ", $self->array->at($i);
     }
     say '';
 }
